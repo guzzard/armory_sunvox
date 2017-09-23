@@ -55,7 +55,6 @@ int Sunvox::load_lib() {
 #endif
 
     if (!handle) {
-		int a = dlerror();
         std::cerr << "Cannot open library: " << dlerror() << std::endl;
         return -1;
     }
