@@ -1,5 +1,10 @@
 #include "Sunvox.h"
 
+#ifdef KORE_MACOS
+#include <Kore/System.h>
+extern const char* macgetresourcepath();
+#endif
+
 extern "C" typedef int (*init_t)(const char* dev, int freq, int channels, unsigned int flags);
 extern "C" typedef int (*deinit_t)();
 extern "C" typedef int (*open_slot_t)(int slot);
@@ -29,7 +34,16 @@ Sunvox::Sunvox() {
 }
 
 int Sunvox::load_lib() {
-    handle = dlopen("./sunvox.so", RTLD_LAZY);
+#ifdef KORE_LINUX
+    handle = dlopen("sunvox.so", RTLD_LAZY);
+#elif KORE_MACOS
+    char name[1024];
+    strcpy(name, macgetresourcepath());
+    strcat(name, "/osx/sunvox.dylib");
+    handle = dlopen(name, RTLD_LAZY);
+#elif KORE_WINDOWS
+
+#endif
     if (!handle) {
         std::cerr << "Cannot open library: " << dlerror() << std::endl;
         return -1;
@@ -188,7 +202,15 @@ int Sunvox::unlock_slot(int slot) {
 }
 
 int Sunvox::load(int slot, const char* name) {
+#ifdef KORE_MACOS
+    char path[1024];
+    strcpy(path, macgetresourcepath());
+    strcat(path, "/osx/");
+    strcat(path, name);
+    int load = load_f(slot, path);
+#else
     int load = load_f(slot, name);
+#endif
     if (load != 0) {
         return load;
     }
