@@ -5,17 +5,26 @@
 extern const char* macgetresourcepath();
 #endif
 
-extern "C" typedef int (*init_t)(const char* dev, int freq, int channels, unsigned int flags);
-extern "C" typedef int (*deinit_t)();
-extern "C" typedef int (*open_slot_t)(int slot);
-extern "C" typedef int (*close_slot_t)(int slot);
-extern "C" typedef int (*lock_slot_t)(int slot);
-extern "C" typedef int (*unlock_slot_t)(int slot);
-extern "C" typedef int (*load_t)(int slot, const char* name);
-extern "C" typedef int (*volume_t)(int slot, int vol);
-extern "C" typedef int (*play_t)(int slot);
-extern "C" typedef int (*play_from_beginning_t)(int slot);
-extern "C" typedef int (*stop_t)(int slot);
+#ifdef KORE_WINDOWS
+#define dlerror GetLastError
+#define dlsym GetProcAddress
+#define dlclose FreeLibrary
+#define SUNVOX_FN_ATTR __stdcall
+#else
+#define SUNVOX_FN_ATTR /**/
+#endif
+
+extern "C" typedef int(SUNVOX_FN_ATTR *init_t)(const char* dev, int freq, int channels, unsigned int flags);
+extern "C" typedef int(SUNVOX_FN_ATTR *deinit_t)();
+extern "C" typedef int(SUNVOX_FN_ATTR *open_slot_t)(int slot);
+extern "C" typedef int(SUNVOX_FN_ATTR *close_slot_t)(int slot);
+extern "C" typedef int(SUNVOX_FN_ATTR *lock_slot_t)(int slot);
+extern "C" typedef int(SUNVOX_FN_ATTR *unlock_slot_t)(int slot);
+extern "C" typedef int(SUNVOX_FN_ATTR *load_t)(int slot, const char* name);
+extern "C" typedef int(SUNVOX_FN_ATTR *volume_t)(int slot, int vol);
+extern "C" typedef int(SUNVOX_FN_ATTR *play_t)(int slot);
+extern "C" typedef int(SUNVOX_FN_ATTR *play_from_beginning_t)(int slot);
+extern "C" typedef int(SUNVOX_FN_ATTR *stop_t)(int slot);
 
 init_t init_f = 0;
 deinit_t deinit_f = 0;
@@ -42,9 +51,11 @@ int Sunvox::load_lib() {
     strcat(name, "/osx/sunvox.dylib");
     handle = dlopen(name, RTLD_LAZY);
 #elif KORE_WINDOWS
-
+	handle = LoadLibrary(TEXT("sunvox.dll"));
 #endif
+
     if (!handle) {
+		int a = dlerror();
         std::cerr << "Cannot open library: " << dlerror() << std::endl;
         return -1;
     }
