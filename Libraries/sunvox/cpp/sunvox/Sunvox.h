@@ -1,7 +1,11 @@
 #ifndef _SUNVOX_H_
 #define _SUNVOX_H_
 
+#ifdef KORE_WINDOWS
+#include <Windows.h>
+#else
 #include <dlfcn.h>
+#endif
 #include <iostream>
 #include <set>
 
@@ -22,7 +26,11 @@ public:
     int stop(int slot); // stop playback of slot
     
 private:
-    void* handle;
+#ifdef KORE_WINDOWS
+	HINSTANCE handle;
+#else
+	void* handle;
+#endif
     
     std::set<int> open_slots;
     std::set<int> locked_slots;
