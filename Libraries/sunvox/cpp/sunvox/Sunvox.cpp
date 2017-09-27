@@ -44,7 +44,7 @@ Sunvox::Sunvox() {
 
 int Sunvox::load_lib() {
 #ifdef KORE_LINUX
-    handle = dlopen("sunvox.so", RTLD_LAZY);
+    handle = dlopen("./sunvox.so", RTLD_LAZY);
 #elif KORE_MACOS
     char name[1024];
     strcpy(name, macgetresourcepath());
