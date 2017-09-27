@@ -1,0 +1,11 @@
+build/
+build_sunvox/
+kha_example/build/
+Bundled/8bit_tales.sunvox
+Bundled/sunvox.so
+Sources/Main.hx
+kha_example/Assets/8bit_tales.sunvox
+kha_example/Assets/sunvox.so
+khafile.js
+kha_example/korefile.js
+sunvox.blend1
